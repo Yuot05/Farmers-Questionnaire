@@ -1,0 +1,63 @@
+# Install necessary packages (run only once)
+install.packages("readxl")     
+install.packages("tidyverse")  
+install.packages("skimr")      
+install.packages("ggplot2")   
+
+# Load libraries
+library(readxl)
+library(tidyverse)
+library(skimr)
+library(ggplot2)
+
+# Set the file path (adjust to the actual file location on your machine)
+file_path <- "FARMERS_QUESTIONNAIRE_-Cleaning.xlsx"
+
+# Load the Excel file
+data <- read_excel(file_path)
+
+# View the first few rows of the data
+head(data)
+
+# Get a summary of the data
+summary(data)
+
+# Explore the structure of the dataset
+str(data)
+
+# Check for missing values
+colSums(is.na(data))
+
+# Visualize missing data (optional)
+library(naniar)
+gg_miss_var(data)
+
+# Descriptive statistics for numerical columns
+skim(data)
+
+# Example: Histogram of a numeric column (replace 'column_name' with actual name)
+ggplot(data, aes(x = column_name)) +
+  geom_histogram(binwidth = 10, fill = "blue", color = "white") +
+  labs(title = "Histogram of column_name", x = "Values", y = "Frequency")
+
+# Example: Bar plot for categorical data (replace 'category_column' with actual name)
+ggplot(data, aes(x = category_column)) +
+  geom_bar(fill = "orange", color = "black") +
+  labs(title = "Bar Plot of category_column", x = "Category", y = "Count")
+
+# Example: Correlation matrix (for numerical variables)
+numeric_data <- select_if(data, is.numeric)
+cor_matrix <- cor(numeric_data, use = "complete.obs")
+print(cor_matrix)
+
+# Optional: Heatmap for correlation
+library(reshape2)
+melted_cor <- melt(cor_matrix)
+ggplot(data = melted_cor, aes(Var1, Var2, fill = value)) +
+  geom_tile() +
+  scale_fill_gradient2(low = "blue", high = "red", mid = "white", midpoint = 0, limit = c(-1, 1)) +
+  theme_minimal() +
+  labs(title = "Correlation Heatmap")
+
+# Save cleaned or modified data
+write_csv(data, "cleaned_data.csv")
